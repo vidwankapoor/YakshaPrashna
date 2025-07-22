@@ -1,35 +1,18 @@
 import streamlit as st
-from transformers import pipeline
 import pandas as pd
-import google.generativeai as genai
+import requests
+import json
 
-# Configure Gemini API
-try:
-    genai.configure(api_key=st.secrets["gemini"]["api_key"])
-except Exception as e:
-    st.error("Error configuring Gemini API key:")
-    st.exception(e)
+# Google Gemini API Key from Streamlit secrets
+gemini_api_key = st.secrets["gemini_api_key"]
 
 # Clear Cache Button
 if st.button("Clear Cache"):
     st.cache_data.clear()
     st.success("Cache has been cleared!")
 
-# Load FLAN-T5 model
-try:
-    pipe = pipeline(
-        "text2text-generation",
-        model="vidwankapoor/flan-t5-prompt-rewriter",
-        tokenizer="vidwankapoor/flan-t5-prompt-rewriter",
-        use_fast=False,
-        revision="main"
-    )
-except Exception as e:
-    st.error("Error loading model:")
-    st.exception(e)
-
 # Streamlit UI setup
-st.set_page_config(page_title="AskPerfect", layout="centered")
+st.set_page_config(page_title="YakshaPrathna", layout="centered")
 
 st.markdown("""
     <style>
@@ -62,42 +45,44 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-st.markdown("""<h2 style='text-align: center;color: white';>AskPerfect </h2>""", unsafe_allow_html=True)
+st.markdown("""<h2 style='text-align: center;color: white';>YakshaPrathna </h2>""", unsafe_allow_html=True)
 
-# Define Gemini enhancement and response functions
-def enhance_prompt_with_gemini(prompt):
-    model = genai.GenerativeModel('gemini-pro')
-    response = model.generate_content(
-        f"You enhance prompts to make them more ChatGPT-friendly, professional, and clear.\nImprove this prompt: {prompt}"
-    )
-    return response.text.strip()
-
+# Function to get Gemini response
 def get_final_gemini_answer(prompt):
-    model = genai.GenerativeModel('gemini-pro')
-    response = model.generate_content(prompt)
-    return response.text.strip()
+    url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent"
+    headers = {
+        "Authorization": f"Bearer {gemini_api_key}",
+        "Content-Type": "application/json"
+    }
+    payload = {
+        "contents": [
+            {"parts": [{"text": prompt}]}
+        ]
+    }
+    response = requests.post(url, headers=headers, data=json.dumps(payload))
+    if response.status_code == 200:
+        return response.json()['candidates'][0]['content']['parts'][0]['text'].strip()
+    else:
+        return f"Error: {response.status_code} - {response.text}"
 
 # Main input and processing
 user_input = st.text_input("You:", placeholder="Enter a casual or broken prompt in Hinglish or English")
 
 if user_input:
-    with st.spinner("Rewriting and enhancing your prompt..."):
-        flan_output = pipe("rewrite prompt: " + user_input)
-        flan_prompt = flan_output[0]['generated_text']
-
-        gemini_enhanced_prompt = enhance_prompt_with_gemini(flan_prompt)
-        final_answer = get_final_gemini_answer(gemini_enhanced_prompt)
+    with st.spinner("Getting Gemini response..."):
+        gemini_output = get_final_gemini_answer(user_input)
 
     st.markdown("""
         <div class="chat-container">
             <div class="user-message">Your Prompt: {}</div>
-            <div class="ai-message"><b>Step 1: Flan-T5 Rewritten Prompt:</b><br>{}</div>
-            <div class="ai-message"><b>Step 2: Gemini Enhanced Prompt:</b><br>{}</div>
-            <div class="ai-message"><b>Step 3: Final Gemini Answer:</b><br>{}</div>
+            <div class="ai-message"><b>Gemini Answer:</b><br>{}</div>
         </div>
-    """.format(user_input, flan_prompt, gemini_enhanced_prompt, final_answer), unsafe_allow_html=True)
+    """.format(user_input, gemini_output), unsafe_allow_html=True)
 
 # Load and display sample prompts
-df = pd.read_csv("sample_casual_input.csv")
-st.subheader("Sample Casual Prompts")
-st.dataframe(df)
+try:
+    df = pd.read_csv("sample_casual_input.csv")
+    st.subheader("Sample Casual Prompts")
+    st.dataframe(df)
+except:
+    st.warning("sample_casual_input.csv file not found.")
