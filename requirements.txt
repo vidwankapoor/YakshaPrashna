@@ -1,0 +1,6 @@
+streamlit
+openai
+transformers>=4.36.2
+torch
+pandas
+sentencepiece==0.1.99
