@@ -1,17 +1,21 @@
 import streamlit as st
 from transformers import pipeline
 import pandas as pd
-import openai
+import google.generativeai as genai
 
-# Initialize OpenAI client with new API format
-client = openai.OpenAI(api_key=st.secrets["openai"]["api_key"])
+# Configure Gemini API
+try:
+    genai.configure(api_key=st.secrets["gemini"]["api_key"])
+except Exception as e:
+    st.error("Error configuring Gemini API key:")
+    st.exception(e)
 
-
+# Clear Cache Button
 if st.button("Clear Cache"):
     st.cache_data.clear()
     st.success("Cache has been cleared!")
 
-# Load model
+# Load FLAN-T5 model
 try:
     pipe = pipeline(
         "text2text-generation",
@@ -58,27 +62,22 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-st.markdown("<h2 style='text-align: center;color: white;'>AskPerfect</h2>", unsafe_allow_html=True)
+st.markdown("""<h2 style='text-align: center;color: white';>AskPerfect </h2>""", unsafe_allow_html=True)
 
-def enhance_prompt_with_chatgpt(prompt):
-    response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {"role": "system", "content": "You enhance prompts to make them more ChatGPT-friendly, professional, and clear."},
-            {"role": "user", "content": f"Improve this prompt: {prompt}"}
-        ]
+# Define Gemini enhancement and response functions
+def enhance_prompt_with_gemini(prompt):
+    model = genai.GenerativeModel('gemini-pro')
+    response = model.generate_content(
+        f"You enhance prompts to make them more ChatGPT-friendly, professional, and clear.\nImprove this prompt: {prompt}"
     )
-    return response.choices[0].message.content.strip()
+    return response.text.strip()
 
-# ChatGPT Answer Generator (v1 API)
-def get_final_chatgpt_answer(prompt):
-    response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=[{"role": "user", "content": prompt}]
-    )
-    return response.choices[0].message.content.strip()
+def get_final_gemini_answer(prompt):
+    model = genai.GenerativeModel('gemini-pro')
+    response = model.generate_content(prompt)
+    return response.text.strip()
 
-# Main app input and response logic
+# Main input and processing
 user_input = st.text_input("You:", placeholder="Enter a casual or broken prompt in Hinglish or English")
 
 if user_input:
@@ -86,19 +85,19 @@ if user_input:
         flan_output = pipe("rewrite prompt: " + user_input)
         flan_prompt = flan_output[0]['generated_text']
 
-        gpt_enhanced_prompt = enhance_prompt_with_chatgpt(flan_prompt)
-        final_answer = get_final_chatgpt_answer(gpt_enhanced_prompt)
+        gemini_enhanced_prompt = enhance_prompt_with_gemini(flan_prompt)
+        final_answer = get_final_gemini_answer(gemini_enhanced_prompt)
 
     st.markdown("""
         <div class="chat-container">
             <div class="user-message">Your Prompt: {}</div>
             <div class="ai-message"><b>Step 1: Flan-T5 Rewritten Prompt:</b><br>{}</div>
-            <div class="ai-message"><b>Step 2: ChatGPT Enhanced Prompt:</b><br>{}</div>
-            <div class="ai-message"><b>Step 3: Final ChatGPT Answer:</b><br>{}</div>
+            <div class="ai-message"><b>Step 2: Gemini Enhanced Prompt:</b><br>{}</div>
+            <div class="ai-message"><b>Step 3: Final Gemini Answer:</b><br>{}</div>
         </div>
-    """.format(user_input, flan_prompt, gpt_enhanced_prompt, final_answer), unsafe_allow_html=True)
+    """.format(user_input, flan_prompt, gemini_enhanced_prompt, final_answer), unsafe_allow_html=True)
 
-# Load sample data
+# Load and display sample prompts
 df = pd.read_csv("sample_casual_input.csv")
 st.subheader("Sample Casual Prompts")
 st.dataframe(df)
