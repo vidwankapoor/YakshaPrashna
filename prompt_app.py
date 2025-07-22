@@ -64,7 +64,8 @@ def get_final_gemini_answer(prompt):
         ]
     }
 
-    response = requests.post(url, headers=headers, data=json.dumps(payload))
+    response = requests.post(url, headers=headers, json=payload)
+
     
     if response.status_code == 200:
         return response.json()['candidates'][0]['content']['parts'][0]['text'].strip()
