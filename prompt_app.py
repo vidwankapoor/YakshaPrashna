@@ -3,14 +3,15 @@ from transformers import pipeline
 import pandas as pd
 import openai
 
+# Initialize OpenAI client with new API format
+client = openai.OpenAI(api_key=st.secrets["openai"]["api_key"])
 
-openai.api_key = st.secrets["openai"]["api_key"]
-# Clear Cache Button
+
 if st.button("Clear Cache"):
     st.cache_data.clear()
     st.success("Cache has been cleared!")
 
-
+# Load model
 try:
     pipe = pipeline(
         "text2text-generation",
@@ -57,27 +58,27 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-st.markdown("""<h2 style='text-align: center;color: white';>AskPerfect </h2>""", unsafe_allow_html=True)
+st.markdown("<h2 style='text-align: center;color: white;'>AskPerfect</h2>", unsafe_allow_html=True)
 
-# Define ChatGPT enhancement and response functions
 def enhance_prompt_with_chatgpt(prompt):
-    response = openai.ChatCompletion.create(
+    response = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
             {"role": "system", "content": "You enhance prompts to make them more ChatGPT-friendly, professional, and clear."},
             {"role": "user", "content": f"Improve this prompt: {prompt}"}
         ]
     )
-    return response['choices'][0]['message']['content'].strip()
+    return response.choices[0].message.content.strip()
 
+# ChatGPT Answer Generator (v1 API)
 def get_final_chatgpt_answer(prompt):
-    response = openai.ChatCompletion.create(
+    response = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[{"role": "user", "content": prompt}]
     )
-    return response['choices'][0]['message']['content'].strip()
+    return response.choices[0].message.content.strip()
 
-# Main input and processing
+# Main app input and response logic
 user_input = st.text_input("You:", placeholder="Enter a casual or broken prompt in Hinglish or English")
 
 if user_input:
@@ -97,7 +98,7 @@ if user_input:
         </div>
     """.format(user_input, flan_prompt, gpt_enhanced_prompt, final_answer), unsafe_allow_html=True)
 
-# Load and display sample prompts
+# Load sample data
 df = pd.read_csv("sample_casual_input.csv")
 st.subheader("Sample Casual Prompts")
 st.dataframe(df)
