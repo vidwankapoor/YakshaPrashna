@@ -4,7 +4,7 @@ import requests
 import json
 
 # Google Gemini API Key from Streamlit secrets
-gemini_api_key = st.secrets["gemini_api_key"]
+gemini_api_key = st.secrets['gemini']["gemini_api_key"]
 st.write("Gemini API Key Loaded:", st.secrets["gemini"]["gemini_api_key"][:5] + "...")
 
 # Clear Cache Button
