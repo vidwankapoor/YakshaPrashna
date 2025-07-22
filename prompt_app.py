@@ -51,7 +51,8 @@ st.markdown("""<h2 style='text-align: center;color: white';>YakshaPrathna </h2>"
 # Function to get Gemini response
 def get_final_gemini_answer(prompt):
     gemini_api_key = st.secrets["gemini"]["gemini_api_key"]
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={gemini_api_key}"
+    url = f"https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key={gemini_api_key}"
+
     
     headers = {
         "Content-Type": "application/json"
