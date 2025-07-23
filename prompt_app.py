@@ -13,8 +13,8 @@ if st.button("Clear Cache"):
     st.success("Cache has been cleared!")
 
 # Streamlit UI setup
-st.set_page_config(page_title="YakshaPrashna Ver1.0", layout="centered")
-st.markdown('<div class="white-caption">Here limit does not exist..</div>', unsafe_allow_html=True)
+st.set_page_config(page_title="YakshaPrashna", layout="centered")
+
 
 st.markdown("""
     <style>
@@ -53,8 +53,8 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-st.markdown("""<h2 style='text-align: center;color: white';>YakshaPrathna </h2>""", unsafe_allow_html=True)
-
+st.markdown("""<h2 style='text-align: center;color: white';>YakshaPrashna Ver1.0 </h2>""", unsafe_allow_html=True)
+st.markdown('<div class="white-caption">Here limit does not exist..</div>', unsafe_allow_html=True)
 # Function to get Gemini response
 def get_final_gemini_answer(prompt):
     gemini_api_key = st.secrets["gemini"]["gemini_api_key"]
@@ -113,7 +113,7 @@ Enhanced Prompt:
         return f"Error: {response.status_code} - {response.text}"
 
 # Main input and processing
-user_input = st.text_input("You:", placeholder="Enter a casual or broken prompt in Hinglish or English")
+user_input = st.text_input("You:", placeholder="Ask Anything...")
 
 if user_input:
     with st.spinner("Getting Response..."):
