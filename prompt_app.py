@@ -14,7 +14,7 @@ if st.button("Clear Cache"):
 
 # Streamlit UI setup
 st.set_page_config(page_title="YakshaPrashna Ver1.0", layout="centered")
-st.caption("Here limit does not exist..")
+st.markdown('<div class="white-caption">Here limit does not exist..</div>', unsafe_allow_html=True)
 
 st.markdown("""
     <style>
@@ -43,6 +43,12 @@ st.markdown("""
         .ai-message {
             background-color: #e2e3e5;
             text-align: left;
+        }
+        
+         .white-caption {
+        color: white;
+        font-size: 0.9rem;
+        margin-top: -10px;
         }
     </style>
 """, unsafe_allow_html=True)
