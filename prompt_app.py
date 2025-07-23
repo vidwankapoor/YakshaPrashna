@@ -73,19 +73,53 @@ def get_final_gemini_answer(prompt):
     else:
         return f"Error: {response.status_code} - {response.text}"
 
+
+def enhance_prompt_with_gemini(user_input):
+    gemini_api_key = st.secrets["gemini"]["gemini_api_key"]
+    url = f"https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash-lite-001:generateContent?key={gemini_api_key}"
+
+    headers = {
+        "Content-Type": "application/json"
+    }
+
+    # Dynamic rewriter instruction
+    enhancement_prompt = f"""
+You are a helpful AI prompt rewriter. 
+Take the following casual or unstructured user input and rewrite it as a clear, professional, and AI-friendly prompt 
+that can be directly given to a chatbot like ChatGPT.
+
+User Input: "{user_input}"
+Enhanced Prompt:
+"""
+
+    payload = {
+        "contents": [
+            {"parts": [{"text": enhancement_prompt}]}
+        ]
+    }
+
+    response = requests.post(url, headers=headers, json=payload)
+
+    if response.status_code == 200:
+        return response.json()['candidates'][0]['content']['parts'][0]['text'].strip()
+    else:
+        return f"Error: {response.status_code} - {response.text}"
+
 # Main input and processing
 user_input = st.text_input("You:", placeholder="Enter a casual or broken prompt in Hinglish or English")
 
 if user_input:
-    with st.spinner("Getting Gemini response..."):
+    with st.spinner("Getting Response..."):
+        ai_prompt = enhance_prompt_with_gemini(user_input)
         gemini_output = get_final_gemini_answer(user_input)
 
     st.markdown("""
         <div class="chat-container">
             <div class="user-message">Your Prompt: {}</div>
-            <div class="ai-message"><b>Gemini Answer:</b><br>{}</div>
+            <div class="user-message">AI Friendly Prompt: {}</div>
+            <div class="ai-message"><b>Answer:</b><br>{}</div>
         </div>
-    """.format(user_input, gemini_output), unsafe_allow_html=True)
+    """.format(user_input,ai_prompt,gemini_output), unsafe_allow_html=True)
 
 # Load and display sample prompts
 try:
