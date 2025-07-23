@@ -35,7 +35,7 @@ st.markdown("""
             padding: 12px 16px;
             margin-bottom: 10px;
             border-radius: 8px;
-            
+
         }
         .user-message {
             background-color: #d1e7dd;
@@ -51,8 +51,8 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-st.markdown("""<h2 style='text-align: center;color: var(--text-color);'>YakshaPrashna Ver1.0 </h2>""", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center; color: var(--text-color); font-size: 14px;'>Here limit does not exist..</p>", unsafe_allow_html=True)
+st.markdown("""<h2 style='text-align: center;color:white;'>YakshaPrashna Ver1.0 </h2>""", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: white; font-size: 14px;'>Here limit does not exist..</p>", unsafe_allow_html=True)
 # Function to get Gemini response
 def get_final_gemini_answer(prompt):
     gemini_api_key = st.secrets["gemini"]["gemini_api_key"]
