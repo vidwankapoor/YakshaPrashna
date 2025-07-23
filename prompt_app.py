@@ -5,7 +5,7 @@ import json
 
 # Google Gemini API Key from Streamlit secrets
 gemini_api_key = st.secrets['gemini']["gemini_api_key"]
-st.write("Gemini API Key Loaded:", st.secrets["gemini"]["gemini_api_key"][:5] + "...")
+
 
 # Clear Cache Button
 if st.button("Clear Cache"):
@@ -115,8 +115,8 @@ if user_input:
 
     st.markdown("""
         <div class="chat-container">
-            <div class="user-message">Your Prompt: {}</div>
-            <div class="ai-message">AI Friendly Prompt: {}</div>
+            <div class="user-message"><b>Your Prompt</b>: {}</div>
+            <div class="ai-message"><b>AI Friendly Prompt</b>: {}</div>
             <div class="ai-message"><b>Answer:</b><br>{}</div>
         </div>
     """.format(user_input,ai_prompt,gemini_output), unsafe_allow_html=True)
