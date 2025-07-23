@@ -40,12 +40,12 @@ st.markdown("""
         .user-message {
             background-color: #d1e7dd;
             text-align: right;
-            color: #FFFFFF;
+            color: black;
         }
         .ai-message {
             background-color: #e2e3e5;
             text-align: left;
-            color: #FFFFFF;
+            color: black;
         }
         
     </style>
