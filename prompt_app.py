@@ -13,7 +13,8 @@ if st.button("Clear Cache"):
     st.success("Cache has been cleared!")
 
 # Streamlit UI setup
-st.set_page_config(page_title="YakshaPrathna", layout="centered")
+st.set_page_config(page_title="YakshaPrashna Ver1.0", layout="centered")
+st.caption("Here limit does not exist..")
 
 st.markdown("""
     <style>
