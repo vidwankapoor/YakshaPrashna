@@ -116,7 +116,7 @@ if user_input:
     st.markdown("""
         <div class="chat-container">
             <div class="user-message">Your Prompt: {}</div>
-            <div class="user-message">AI Friendly Prompt: {}</div>
+            <div class="ai-message">AI Friendly Prompt: {}</div>
             <div class="ai-message"><b>Answer:</b><br>{}</div>
         </div>
     """.format(user_input,ai_prompt,gemini_output), unsafe_allow_html=True)
